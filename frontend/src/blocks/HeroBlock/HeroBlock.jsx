@@ -1,15 +1,24 @@
+function hexToRgba(hex, alpha) {
+  if (!hex) return `rgba(0,0,0,${alpha})`;
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 export default function HeroBlock({ block }) {
   const { heading, subheading, bgImage, overlayColor, overlayOpacity, ctaText, ctaUrl, ctaColor, alignment, textColor } = block.props;
   const alignClass = alignment === 'left' ? 'items-start text-left' : alignment === 'right' ? 'items-end text-right' : 'items-center text-center';
 
   return (
-    <div className="relative w-full flex min-h-[400px] overflow-hidden" style={{ minHeight: block.style?.minHeight }}>
+    <div className="relative w-full flex min-h-[400px] overflow-hidden" style={{ minHeight: block.style?.minHeight, backgroundColor: overlayColor || '#0f1117' }}>
       {bgImage && (
         <img src={bgImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
       )}
       <div
         className="absolute inset-0"
-        style={{ backgroundColor: overlayColor, opacity: (overlayOpacity || 70) / 100 }}
+        style={{ backgroundColor: hexToRgba(overlayColor, (overlayOpacity || 70) / 100) }}
       />
       <div className={`relative z-10 flex flex-col ${alignClass} justify-center w-full px-8 py-20 gap-6`}>
         <h1 className="text-5xl font-bold leading-tight" style={{ color: textColor }}>

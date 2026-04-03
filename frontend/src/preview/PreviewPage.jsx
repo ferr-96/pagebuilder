@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Monitor, Tablet, Smartphone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useBuilderStore from '../store/builderStore';
@@ -16,6 +16,23 @@ export default function PreviewPage() {
   const navigate = useNavigate();
   const blocks = useBuilderStore(s => s.blocks);
   const [viewport, setViewport] = useState('desktop');
+
+  // Load from localStorage if store is empty (direct navigation/reload)
+  useEffect(() => {
+    if (blocks.length === 0) {
+      try {
+        const saved = localStorage.getItem('pb:current-page');
+        if (saved) {
+          const data = JSON.parse(saved);
+          if (data.blocks?.length) {
+            useBuilderStore.getState().loadBlocks(data.blocks);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to load saved page:', e);
+      }
+    }
+  }, []);
 
   const viewportOptions = [
     { key: 'desktop', icon: Monitor },
