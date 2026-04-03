@@ -1,10 +1,12 @@
 import { create } from 'zustand';
+import { subscribeWithSelector } from 'zustand/middleware';
 import { temporal } from 'zundo';
 import { immer } from 'zustand/middleware/immer';
 import { generateId } from '../utils/id';
 import { registry } from '../blocks/registry';
 
 const useBuilderStore = create(
+  subscribeWithSelector(
   temporal(
     immer((set, get) => ({
       blocks: [],
@@ -194,8 +196,12 @@ const useBuilderStore = create(
         });
       },
     })),
-    { limit: 50 }
-  )
+    {
+      limit: 50,
+      equality: (pastState, currentState) =>
+        JSON.stringify(pastState.blocks) === JSON.stringify(currentState.blocks),
+    }
+  ))
 );
 
 export default useBuilderStore;
